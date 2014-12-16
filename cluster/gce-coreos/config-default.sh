@@ -15,17 +15,15 @@
 # limitations under the License.
 
 # TODO(jbeda): Provide a way to override project
-# gcloud multiplexing for shared GCE/GKE tests.
-GCLOUD=gcloud
 ZONE=us-central1-b
 MASTER_SIZE=n1-standard-1
 MINION_SIZE=n1-standard-1
-NUM_MINIONS=4
+NUM_MINIONS=1
 # TODO(dchen1107): Filed an internal issue to create an alias
 # for containervm image, so that gcloud will expand this
 # to the latest supported image.
-IMAGE=container-vm-v20141208
-IMAGE_PROJECT=google-containers
+IMAGE=coreos-alpha-522-0-0-v20141205
+IMAGE_PROJECT=coreos-cloud
 NETWORK=default
 INSTANCE_PREFIX=kubernetes
 MASTER_NAME="${INSTANCE_PREFIX}-master"
@@ -39,17 +37,17 @@ POLL_SLEEP_INTERVAL=3
 PORTAL_NET="10.0.0.0/16"
 
 # Optional: Install node monitoring.
-ENABLE_NODE_MONITORING=true
+ENABLE_NODE_MONITORING=false
 
 # Optional: When set to true, heapster will be setup as part of the cluster bring up.
-ENABLE_CLUSTER_MONITORING=true
+ENABLE_CLUSTER_MONITORING=false
 
 # When set to true, Docker Cache is enabled by default as part of the cluster bring up.
-ENABLE_DOCKER_REGISTRY_CACHE=true
+ENABLE_DOCKER_REGISTRY_CACHE=false
 
 # Optional: Enable node logging.
-ENABLE_NODE_LOGGING=true
-LOGGING_DESTINATION=elasticsearch # options: elasticsearch, gcp
+ENABLE_NODE_LOGGING=false
+# LOGGING_DESTINATION=elasticsearch # options: elasticsearch, gcp
 
 # Don't require https for registries in our local RFC1918 network
 EXTRA_DOCKER_OPTS="--insecure-registry 10.0.0.0/8"

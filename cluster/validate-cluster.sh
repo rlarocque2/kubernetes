@@ -20,7 +20,6 @@
 # that directly.  If not then we assume we are doing development stuff and take
 # the defaults in the release config.
 
-set -o errexit
 set -o nounset
 set -o pipefail
 
@@ -79,7 +78,9 @@ for (( i=0; i<${#MINION_NAMES[@]}; i++)); do
     done
 
     name="${MINION_NAMES[$i]}"
-    if [ "$KUBERNETES_PROVIDER" != "vsphere" ] && [ "$KUBERNETES_PROVIDER" != "vagrant" ]; then
+    if [ "$KUBERNETES_PROVIDER" != "vsphere" ] &&
+            [ "$KUBERNETES_PROVIDER" != "vagrant" ] &&
+            [ "$KUBERNETES_PROVIDER" != "gce-coreos" ]; then
       # Grab fully qualified name
       name=$(grep "${MINION_NAMES[$i]}\." "${MINIONS_FILE}")
     fi
@@ -90,7 +91,7 @@ for (( i=0; i<${#MINION_NAMES[@]}; i++)); do
     while true; do
       echo -n "Attempt $((attempt+1)) at checking Kubelet installation on node ${MINION_NAMES[$i]} ..."
       curl_output=$(curl -s --insecure --user "${KUBE_USER}:${KUBE_PASSWORD}" \
-          "https://${KUBE_MASTER_IP}/api/v1beta1/proxy/minions/${name}/healthz")
+          "${KUBERNETES_MASTER}/api/v1beta1/proxy/minions/${name}/healthz")
       if [[ "${curl_output}" != "ok" ]]; then
           if (( attempt > 5 )); then
             echo
