@@ -227,6 +227,16 @@ function ensure-minion-i-metadata {
     echo "SERVER_BINARY_TAR_URL='${SERVER_BINARY_TAR_URL}'"
     echo "KUBE_MASTER_INTERNAL_IP=${KUBE_MASTER_INTERNAL_IP}"
   ) > "${KUBERNETES_MINION_PARAMS_TMP[$i]}"
+
+  KUBERNETES_MINION_CLOUDINIT_TMP[$i]="${KUBE_TEMP}/kubernetes-minion-cloudinit-${i}"
+  (
+    echo "#cloud-config"
+    echo ""
+    echo "etcd-params-for-merge-key: &peer-list"
+    echo "  peers: ${KUBE_MASTER_INTERNAL_IP}:7001"
+    echo ""
+  ) > ${KUBERNETES_MINION_CLOUDINIT_TMP[$i]}
+  cat "${KUBE_ROOT}/cluster/gce-coreos/minion.yaml" >> ${KUBERNETES_MINION_CLOUDINIT_TMP[$i]}
 }
 
 # Prereqs:
@@ -345,8 +355,8 @@ function kube-up {
       --network "${NETWORK}" \
       "${scope_flags[@]}" \
       --can-ip-forward \
-      --metadata-from-file "kubernetes-minion-params=${KUBERNETES_MINION_PARAMS_TMP}" \
-                           "user-data=${KUBE_ROOT}/cluster/gce-coreos/minion.yaml"
+      --metadata-from-file "kubernetes-minion-params=${KUBERNETES_MINION_PARAMS_TMP[$i]}" \
+                           "user-data=${KUBERNETES_MINION_CLOUDINIT_TMP[$i]}"
 
     gcloud compute routes create "${MINION_NAMES[$i]}" \
       --project "${PROJECT}" \
@@ -516,7 +526,7 @@ function kube-push {
       --metadata-from-file kubernetes-minion-params="${KUBERNETES_MINION_PARAMS_TMP[$i]}"
     gcloud compute instances add-metadata \
       "${MINION_NAMES[$i]}" --project "$PROJECT" --zone "$ZONE" \
-      --metadata-from-file user-data="${KUBE_ROOT}/cluster/gce-coreos/minion.yaml"
+      --metadata-from-file user-data="${KUBERNETES_MINION_CLOUDINIT_TMP[$i]}"
 
     # Rebooting on CoreOS kills the shell before a successful return is received.
     # Hence the need to swallow non-zero exit values.

@@ -1,9 +1,17 @@
-#cloud-config
+
+#  ### Hard-coded fragment begins here. ###
+#
+# This section should be preceded with another fragment that contains
+# something like the following to make the merge-key below work:
+#
+#   etcd-params-for-merge-key: &peer-list
+#     peers: 1.2.3.4:7001,4.5.6.7:7001
 
 coreos:
   etcd:
-    addr: $public_ipv4:4001
-    peer-addr: $public_ipv4:7001
+    <<: *peer-list
+    addr: $private_ipv4:4001
+    peer-addr: $private_ipv4:7001
 
   fleet:
     metadata: region=us-west,role=master
