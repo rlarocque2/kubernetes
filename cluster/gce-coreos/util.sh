@@ -221,6 +221,7 @@ function ensure-minion-i-metadata {
     echo "#! /bin/bash"
     echo "ZONE='${ZONE}'"
     echo "MASTER_NAME='${MASTER_NAME}'"
+    echo "MINION_NAME='${MINION_NAMES[$i]}'"
     echo "MINION_IP_RANGE='${MINION_IP_RANGES[$i]}'"
     echo "EXTRA_DOCKER_OPTS='${EXTRA_DOCKER_OPTS}'"
     echo "ENABLE_DOCKER_REGISTRY_CACHE='${ENABLE_DOCKER_REGISTRY_CACHE:-false}'"
